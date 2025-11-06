@@ -1,0 +1,27 @@
+version: "3"
+
+tasks:
+  default:
+    silent: true
+    desc: "def"
+    cmds:
+      - echo "hello, world"
+
+  git:
+    desc: "git init"
+    silent: true
+    cmds:
+      - git init
+      - git config user.name "shp"
+      - git config user.email "shp@email.com.cn"
+      - cmd: git remote add origin https://github.com/shpdwx/web.git
+        ignore_error: true
+      - git branch -M main
+
+  conf:
+    desc: "generate conf.yml"
+    silent: true
+    dir: conf
+    cmds:
+      - cmd: cp -n conf.yml.example conf.yml
+        ignore_error: true
