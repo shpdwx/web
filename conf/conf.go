@@ -19,9 +19,10 @@ type Minio struct {
 }
 
 type CogView struct {
-	Api   string `mapstructure:"api"`
-	Token string `mapstructure:"token"`
-	Model string `mapstructure:"model"`
+	Api    string `mapstructure:"api"`
+	Token  string `mapstructure:"token"`
+	Model  string `mapstructure:"model"`
+	Origin string `mapstructure:"origin"`
 }
 
 type RabbitMQ struct {

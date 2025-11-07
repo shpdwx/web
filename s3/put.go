@@ -52,7 +52,7 @@ func Put(ctx context.Context, m conf.Minio, image *ImageMeta) (*minio.UploadInfo
 	r := bytes.NewReader(image.Byte)
 
 	// put image
-	info, err := c.PutObject(ctx, bucket, filename, r, int64(image.Size), minio.PutObjectOptions{
+	info, err := c.PutObject(ctx, bucket, filename, r, image.Size, minio.PutObjectOptions{
 		ContentType:  image.ContentType,
 		UserMetadata: map[string]string{"origin": image.Origin, "request-id": image.RequestId, "desc": image.Desc},
 	})

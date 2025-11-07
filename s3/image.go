@@ -12,7 +12,7 @@ import (
 type ImageMeta struct {
 	Name        string
 	ContentType string
-	Size        int
+	Size        int64
 	Origin      string
 	RequestId   string
 	Desc        string
@@ -66,10 +66,10 @@ func Fetch(rawUrl string) (*ImageMeta, error) {
 	}
 
 	// 图片信息
-	resp.Size = int(size)
+	resp.Size = size
 	resp.Name = path.Base(u.Path)
 	resp.ContentType = r.Header.Get("Content-Type")
-	resp.Origin = "cogview"
+	resp.Origin = "web"
 	resp.Byte = buf.Bytes()
 
 	if resp.ContentType == "" {

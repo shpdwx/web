@@ -9,6 +9,7 @@ CogView:
   api:
   token: 
   model: 
+  origin: cogview-v1
 
 RabbitMQ:
   endpoint:

@@ -23,6 +23,9 @@ var (
 
 func main() {
 
+	requestId := uuid.NewString()
+	fmt.Printf("request id: %s\n", requestId)
+
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
@@ -32,9 +35,6 @@ func main() {
 		fmt.Println(err)
 		return
 	}
-
-	logId := uuid.New()
-	fmt.Printf("request id: %s\n", logId.String())
 
 	// 错误处理
 	wg.Add(1)
@@ -57,23 +57,23 @@ func main() {
 		}
 	}()
 
-	generate(ctx, logId, conf)
+	generate(ctx, requestId, conf)
 
 	stopChan <- struct{}{}
 	wg.Wait()
 }
 
-func generate(ctx context.Context, id uuid.UUID, conf conf.Conf) {
+func generate(ctx context.Context, traceId string, conf conf.Conf) {
 
 	txt := "古风水墨画江山如此多娇"
 
-	rsp, err := glm.Image(conf.CogView, txt)
+	rsp, err := glm.Image(ctx, conf.CogView, txt)
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
 	fmt.Println("Successly generate image.")
-	record(id, rsp)
+	record(traceId, rsp)
 
 	for _, v := range rsp.Data {
 
@@ -85,9 +85,10 @@ func generate(ctx context.Context, id uuid.UUID, conf conf.Conf) {
 			return
 		}
 		fmt.Println("Successly download image.")
-		image.RequestId = id.String()
+		image.RequestId = traceId
 		image.Desc = txt
-		record(id, image)
+		image.Origin = conf.CogView.Origin
+		record(traceId, image)
 
 		info, err := s3.Put(ctx, conf.Minio, image)
 		if err != nil {
@@ -95,13 +96,13 @@ func generate(ctx context.Context, id uuid.UUID, conf conf.Conf) {
 			return
 		}
 		fmt.Println("Successly put image.")
-		record(id, info)
+		record(traceId, info)
 
 	}
 }
 
-func record(id uuid.UUID, rsp any) {
+func record(traceId string, rsp any) {
 	if b, err := json.Marshal(rsp); err == nil {
-		logsChan <- fmt.Sprintf("uuid %s content %s", id.String(), string(b))
+		logsChan <- fmt.Sprintf("traceid %s content %s", traceId, string(b))
 	}
 }

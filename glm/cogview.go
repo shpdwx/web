@@ -1,6 +1,7 @@
 package glm
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"io"
@@ -31,7 +32,7 @@ type cogviewReq struct {
 	Size   string `json:"size"`
 }
 
-func Image(c conf.CogView, txt string) (*CogViewImageResp, error) {
+func Image(ctx context.Context, c conf.CogView, txt string) (*CogViewImageResp, error) {
 
 	var (
 		rawUrl = c.Api
@@ -54,7 +55,7 @@ func Image(c conf.CogView, txt string) (*CogViewImageResp, error) {
 
 	payload := strings.NewReader(string(b))
 
-	req, err := http.NewRequest("POST", rawUrl, payload)
+	req, err := http.NewRequestWithContext(ctx, "POST", rawUrl, payload)
 	if err != nil {
 		return nil, err
 	}
